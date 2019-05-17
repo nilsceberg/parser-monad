@@ -15,6 +15,19 @@ export class Parser<T> {
 	parse(source: SourcePointer): ParserResult<T> {
 		return this.f(source);
 	}
+
+	matches(pred: (v: T) => boolean): Parser<T> {
+		return new Parser(s => {
+			let result = this.parse(s);
+			if (result.isJust()) {
+				const [v, r] = result.from();
+				if (!pred(v)) {
+					result = Maybe.nothing();
+				}
+			}
+			return result;
+		});
+	}
 }
 
 export const Character = new Parser<char>(s => Maybe.just([s.first(), s.rest()]));

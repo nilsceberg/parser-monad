@@ -20,4 +20,9 @@ test("or", () => {
 	const a = Maybe.just(1);
 	const b = Maybe.just(2);
 	expect(a.or(b).from()).toStrictEqual(1);
-})
+});
+
+test("map", () => {
+	expect(just.map(x => 2*x).or(Maybe.just(0)).from()).toStrictEqual(246);
+	expect(nothing.map(x => 2*x).or(Maybe.just(0)).from()).toStrictEqual(0);
+});

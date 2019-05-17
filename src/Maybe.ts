@@ -4,6 +4,7 @@ export abstract class Maybe<T> {
 	abstract or(other: Maybe<T>): Maybe<T>;
 	abstract from(): T;
 	abstract isJust(): boolean;
+	abstract map(f: (v: T) => T): Maybe<T>;
 
 	static just<T>(value: T): Maybe<T> {
 		return new Just<T>(value);
@@ -32,6 +33,10 @@ class Just<T> implements Maybe<T> {
 	isJust(): boolean {
 		return true;
 	}
+
+	map(f: (v: T) => T): Maybe<T> {
+		return Maybe.just(f(this.value));
+	}
 }
 
 class Nothing<T> implements Maybe<T> {
@@ -45,5 +50,9 @@ class Nothing<T> implements Maybe<T> {
 
 	isJust(): boolean {
 		return false;
+	}
+
+	map(f: (v: T) => T): Maybe<T> {
+		return this;
 	}
 }
