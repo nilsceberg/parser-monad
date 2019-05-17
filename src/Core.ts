@@ -1,6 +1,8 @@
 import { SourcePointer, char } from "./Source";
+import { Maybe } from "./Maybe";
 
-export type ParserResult<T> = [T, SourcePointer];
+
+export type ParserResult<T> = Maybe<[T, SourcePointer]>;
 export type ParserFunction<T> = (p: SourcePointer) => ParserResult<T>;
 
 export class Parser<T> {
@@ -15,4 +17,4 @@ export class Parser<T> {
 	}
 }
 
-export const Character = new Parser<char>(s => [s.first(), s.rest()]);
+export const Character = new Parser<char>(s => Maybe.just([s.first(), s.rest()]));
