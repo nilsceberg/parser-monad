@@ -31,4 +31,3 @@ export class Parser<T> {
 }
 
 export const Character: Parser<char> = new Parser<char>(s => Maybe.just([s.first(), s.rest()]));
-export const Lit = (c: char) => Character.matches(x => x === c);
