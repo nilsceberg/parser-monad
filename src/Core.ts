@@ -37,6 +37,24 @@ export class Parser<T> {
 			return result;
 		});
 	}
+
+	repeat(n: number = -1): Parser<T[]> {
+		return new Parser(s => {
+			let result: ParserResult<T>;
+			const values: T[] = [];
+			while (n--) {
+				result = this.parse(s);
+				if (!result.isJust()) {
+					break;
+				}
+
+				const [value, s_] = result.from();
+				values.push(value);
+				s = s_;
+			}
+			return Maybe.just([values, s]);
+		});
+	}
 }
 
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));

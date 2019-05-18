@@ -46,3 +46,13 @@ test("or combinator", () => {
 
 	expect(c.or(e).parse(ptr).isJust()).toBeFalsy();
 });
+
+test("repeat combinator", () => {
+	let [value, rest] = Character.repeat(3).parse(ptr).from();
+	expect(value).toStrictEqual(["h", "e", "l"]);
+	expect(rest.equals("lo")).toBeTruthy();
+
+	[value, rest] = Character.matches(x => x === "h" || x === "e").repeat().parse(ptr).from();
+	expect(value).toStrictEqual(["h", "e"]);
+	expect(rest.equals("llo")).toBeTruthy();
+});
