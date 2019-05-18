@@ -15,3 +15,5 @@ export const Alphanumeric = Letter.or(Digit);
 
 // Utility
 export const Word = Alphanumeric.repeat().map(x => x.join(""));
+export const Spaces = Space.repeat();
+export const Token = Word.first(Spaces);
