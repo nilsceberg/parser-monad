@@ -1,4 +1,4 @@
-import { Parser, Character, Return, Fail } from "./Core";
+import { Parser, Character, Return, Fail, Error } from "./Core";
 import { StringSource, SourcePointer, char } from "./Source";
 
 const source = new StringSource("hello");
@@ -13,6 +13,11 @@ test("return parser", () => {
 test("fail parser", () => {
 	const result = Fail.parse(ptr);
 	expect(result.isJust()).toBeFalsy();
+});
+
+test("error parser", () => {
+	expect(() => Error("error").parse(ptr))
+		.toThrow("error at ?");
 });
 
 test("character parser", () => {
