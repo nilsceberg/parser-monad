@@ -1,5 +1,5 @@
 import { StringSource, SourcePointer } from "./Source";
-import { Lit, Alphanumeric, Word, Token, Integer } from "./Parser";
+import { Lit, Alphanumeric, Word, Token, Integer, Digit } from "./Parser";
 
 test("lit parser", () => {
 	const source = new StringSource("hello");

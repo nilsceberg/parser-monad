@@ -1,5 +1,6 @@
 import { Character, Fail, Parser } from "./Core";
 import { char } from "./Source";
+import { cons } from "./Utility";
 
 // Utility
 export const Lit = (c: char) => Character.matches(x => x === c);
@@ -17,4 +18,4 @@ export const Alphanumeric = Letter.or(Digit);
 export const Word = Alphanumeric.repeat().map(x => x.join(""));
 export const Spaces = Space.repeat();
 export const Token = <T>(p: Parser<T>) => p.first(Spaces);
-export const Integer = Digit.repeat().matches(x => x.length > 0).map(x => Number.parseInt(x.join("")));
+export const Integer = Digit.then(Digit.repeat()).map(x => Number.parseInt(cons(x).join("")));
