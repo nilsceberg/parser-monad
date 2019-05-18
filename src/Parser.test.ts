@@ -44,7 +44,7 @@ test("token parser", () => {
 	const s = new StringSource("h3ll0  \n\t my dear");
 	const p = new SourcePointer(s);
 
-	let [result, rest] = Token.parse(p).from();
+	let [result, rest] = Token(Word).parse(p).from();
 	expect(result).toStrictEqual("h3ll0");
 	expect(rest.equals("my dear")).toBeTruthy();
 });

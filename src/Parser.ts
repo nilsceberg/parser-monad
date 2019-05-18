@@ -1,4 +1,4 @@
-import { Character, Fail } from "./Core";
+import { Character, Fail, Parser } from "./Core";
 import { char } from "./Source";
 
 // Utility
@@ -13,7 +13,7 @@ export const Letter = Character.matches(x => {
 });
 export const Alphanumeric = Letter.or(Digit);
 
-// Utility
+// Derived
 export const Word = Alphanumeric.repeat().map(x => x.join(""));
 export const Spaces = Space.repeat();
-export const Token = Word.first(Spaces);
+export const Token = <T>(p: Parser<T>) => p.first(Spaces);
