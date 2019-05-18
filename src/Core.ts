@@ -61,6 +61,41 @@ export class Parser<T> {
 			return this.parse(s).map(([v, r]) => [f(v), r]);
 		});
 	}
+
+	first<U>(other: Parser<U>): Parser<T> {
+		return new Parser<T>(s => {
+			/*
+			TODO: bind combinator
+			return this.parse(s).map(
+				([v, s]) => other.parse(s).map(
+					([_, s]) => [v, s]));
+					*/
+
+			let result = this.parse(s);
+			if (!result.isJust()) return Maybe.nothing();
+			
+			const [value, s_] = result.from();
+			const result_ = other.parse(s_);
+			if (!result_.isJust()) return Maybe.nothing();
+			
+			const [_ , s__] = result_.from();
+			return Maybe.just([value, s__]);
+		});
+	}
+
+	second<U>(other: Parser<U>): Parser<U> {
+		return new Parser<U>(s => {
+			let result = this.parse(s);
+			if (!result.isJust()) return Maybe.nothing();
+			
+			const [_, s_] = result.from();
+			const result_ = other.parse(s_);
+			if (!result_.isJust()) return Maybe.nothing();
+			
+			const [value, s__] = result_.from();
+			return Maybe.just([value, s__]);
+		});
+	}
 }
 
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));

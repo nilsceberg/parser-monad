@@ -61,3 +61,15 @@ test("map combinator", () => {
 	let [value, rest] = Return(123).map(x => x * 2).parse(ptr).from();
 	expect(value).toStrictEqual(246);
 });
+
+test("first combinator", () => {
+	let [value, rest] = Character.first(Character).parse(ptr).from();
+	expect(value).toStrictEqual("h");
+	expect(rest.equals("llo")).toBeTruthy();
+});
+
+test("second combinator", () => {
+	let [value, rest] = Character.second(Character).parse(ptr).from();
+	expect(value).toStrictEqual("e");
+	expect(rest.equals("llo")).toBeTruthy();
+});
