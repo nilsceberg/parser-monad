@@ -17,3 +17,4 @@ export const Alphanumeric = Letter.or(Digit);
 export const Word = Alphanumeric.repeat().map(x => x.join(""));
 export const Spaces = Space.repeat();
 export const Token = <T>(p: Parser<T>) => p.first(Spaces);
+export const Integer = Digit.repeat().matches(x => x.length > 0).map(x => Number.parseInt(x.join("")));

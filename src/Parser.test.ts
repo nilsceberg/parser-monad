@@ -1,5 +1,5 @@
 import { StringSource, SourcePointer } from "./Source";
-import { Lit, Alphanumeric, Word, Token } from "./Parser";
+import { Lit, Alphanumeric, Word, Token, Integer } from "./Parser";
 
 test("lit parser", () => {
 	const source = new StringSource("hello");
@@ -49,3 +49,12 @@ test("token parser", () => {
 	expect(rest.equals("my dear")).toBeTruthy();
 });
 
+test("integer parser", () => {
+	const s = new StringSource("1337  h3ll0  \n\t my dear");
+	const p = new SourcePointer(s);
+
+	const [result, rest] = Token(Integer).parse(p).from();
+	expect(result).toStrictEqual(1337);
+
+	expect(Token(Integer).parse(rest).isJust()).toBeFalsy();
+});
