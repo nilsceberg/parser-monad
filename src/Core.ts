@@ -61,55 +61,6 @@ export class Parser<T> {
 			return this.parse(s).map(([v, r]) => [f(v), r]);
 		});
 	}
-
-	first<U>(other: Parser<U>): Parser<T> {
-		return new Parser<T>(s => {
-			/*
-			TODO: bind combinator
-			return this.parse(s).map(
-				([v, s]) => other.parse(s).map(
-					([_, s]) => [v, s]));
-					*/
-
-			let result = this.parse(s);
-			if (!result.isJust()) return Maybe.nothing();
-			
-			const [value, s_] = result.from();
-			const result_ = other.parse(s_);
-			if (!result_.isJust()) return Maybe.nothing();
-			
-			const [_ , s__] = result_.from();
-			return Maybe.just([value, s__]);
-		});
-	}
-
-	second<U>(other: Parser<U>): Parser<U> {
-		return new Parser<U>(s => {
-			let result = this.parse(s);
-			if (!result.isJust()) return Maybe.nothing();
-			
-			const [_, s_] = result.from();
-			const result_ = other.parse(s_);
-			if (!result_.isJust()) return Maybe.nothing();
-			
-			const [value, s__] = result_.from();
-			return Maybe.just([value, s__]);
-		});
-	}
-	
-	then<U>(other: Parser<U>): Parser<[T, U]> {
-		return new Parser<[T, U]>(s => {
-			const result1 = this.parse(s);
-			if (!result1.isJust()) return Maybe.nothing();
-			const [t, s_] = result1.from();
-
-			const result2 = other.parse(s_);
-			if (!result2.isJust()) return Maybe.nothing();
-			const [u, s__] = result2.from();
-
-			return Maybe.just([[t, u], s__]);
-		});
-	}
 	
 	// Usage of bind may not be suitable (if chaining more than one) due to recursion.
 	// Should implement a sequence for an array of transformations.
@@ -121,6 +72,21 @@ export class Parser<T> {
 
 			return parserFactory(x).parse(s_);
 		});
+	}
+
+	// Again, these implementations are beautiful and much simpler than their predecessors,
+	// but if recursion is an issue, try restoring their old versions
+	// (commit "Simplify first, second, and bind combinators").
+	first<U>(other: Parser<U>): Parser<T> {
+		return this.bind(result => other.map(() => result));
+	}
+
+	second<U>(other: Parser<U>): Parser<U> {
+		return this.bind(() => other);
+	}
+	
+	then<U>(other: Parser<U>): Parser<[T, U]> {
+		return this.bind(x => other.map(y => [x, y]));
 	}
 }
 
