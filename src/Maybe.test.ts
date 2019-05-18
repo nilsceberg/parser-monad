@@ -25,4 +25,6 @@ test("or", () => {
 test("map", () => {
 	expect(just.map(x => 2*x).or(Maybe.just(0)).from()).toStrictEqual(246);
 	expect(nothing.map(x => 2*x).or(Maybe.just(0)).from()).toStrictEqual(0);
+
+	expect(just.map(x => x.toString()).or(Maybe.just("")).from()).toStrictEqual("123");
 });

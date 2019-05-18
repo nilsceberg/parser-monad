@@ -56,3 +56,8 @@ test("repeat combinator", () => {
 	expect(value).toStrictEqual(["h", "e"]);
 	expect(rest.equals("llo")).toBeTruthy();
 });
+
+test("map combinator", () => {
+	let [value, rest] = Return(123).map(x => x * 2).parse(ptr).from();
+	expect(value).toStrictEqual(246);
+});

@@ -55,6 +55,12 @@ export class Parser<T> {
 			return Maybe.just([values, s]);
 		});
 	}
+
+	map<U>(f: (v: T) => U): Parser<U> {
+		return new Parser<U>(s => {
+			return this.parse(s).map(([v, r]) => [f(v), r]);
+		});
+	}
 }
 
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));
