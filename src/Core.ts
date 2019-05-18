@@ -110,6 +110,18 @@ export class Parser<T> {
 			return Maybe.just([[t, u], s__]);
 		});
 	}
+	
+	// Usage of bind may not be suitable (if chaining more than one) due to recursion.
+	// Should implement a sequence for an array of transformations.
+	bind<U>(parserFactory: (x: T) => Parser<U>): Parser<U> {
+		return new Parser<U>(s => {
+			const result = this.parse(s);
+			if (!result.isJust()) return Maybe.nothing();
+			const [x, s_] = result.from();
+
+			return parserFactory(x).parse(s_);
+		});
+	}
 }
 
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));
