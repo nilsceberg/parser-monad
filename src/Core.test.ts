@@ -73,3 +73,9 @@ test("second combinator", () => {
 	expect(value).toStrictEqual("e");
 	expect(rest.equals("llo")).toBeTruthy();
 });
+
+test("then combinator", () => {
+	let [value, rest] = Character.then(Character).parse(ptr).from();
+	expect(value).toStrictEqual(["h", "e"]);
+	expect(rest.equals("llo")).toBeTruthy();
+});

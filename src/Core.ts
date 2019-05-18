@@ -96,6 +96,20 @@ export class Parser<T> {
 			return Maybe.just([value, s__]);
 		});
 	}
+	
+	then<U>(other: Parser<U>): Parser<[T, U]> {
+		return new Parser<[T, U]>(s => {
+			const result1 = this.parse(s);
+			if (!result1.isJust()) return Maybe.nothing();
+			const [t, s_] = result1.from();
+
+			const result2 = other.parse(s_);
+			if (!result2.isJust()) return Maybe.nothing();
+			const [u, s__] = result2.from();
+
+			return Maybe.just([[t, u], s__]);
+		});
+	}
 }
 
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));
