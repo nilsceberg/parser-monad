@@ -1,7 +1,7 @@
 import { Character, Fail } from "./Core";
 import { char } from "./Source";
 
-// Derived
+// Utility
 export const Lit = (c: char) => Character.matches(x => x === c);
 
 // Trivial
@@ -12,3 +12,6 @@ export const Letter = Character.matches(x => {
 	return (a > 0x40 && a < 0x5B) || (a > 0x60 && a < 0x7B);
 });
 export const Alphanumeric = Letter.or(Digit);
+
+// Utility
+export const Word = Alphanumeric.repeat().map(x => x.join(""));

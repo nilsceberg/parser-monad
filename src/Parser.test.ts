@@ -1,5 +1,5 @@
 import { StringSource, SourcePointer } from "./Source";
-import { Lit, Alphanumeric } from "./Parser";
+import { Lit, Alphanumeric, Word } from "./Parser";
 
 test("lit parser", () => {
 	const source = new StringSource("hello");
@@ -29,4 +29,13 @@ test("alphanumeric parser", () => {
 	expect(result).toStrictEqual("3");
 
 	expect(Alphanumeric.parse(p3).isJust()).toBeFalsy();
+});
+
+test("word parser", () => {
+	const s = new StringSource("hello my friend");
+	const p = new SourcePointer(s);
+
+	let [result, rest] = Word.parse(p).from();
+	expect(result).toStrictEqual("hello");
+	expect(rest.equals(" my friend"))
 });
