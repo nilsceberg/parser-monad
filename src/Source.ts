@@ -3,7 +3,7 @@ export type char = string;
 export interface Source {
 }
 
-export class StringSource {
+export class StringSource implements Source {
 	s: string;
 
 	constructor(s: string) {
