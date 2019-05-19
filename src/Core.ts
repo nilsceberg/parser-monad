@@ -40,9 +40,10 @@ export class Parser<T> {
 
 	repeat(n: number = -1): Parser<T[]> {
 		return new Parser(s => {
+			let i = n;
 			let result: ParserResult<T>;
 			const values: T[] = [];
-			while (n--) {
+			while (i--) {
 				result = this.parse(s);
 				if (!result.isJust()) {
 					break;
@@ -95,4 +96,6 @@ export const Fail = new Parser<any>(s => Maybe.nothing());
 export const Error = (message: string) => new Parser<any>(s => {
 	throw(`${message} at ?`);
 });
-export const Character: Parser<char> = new Parser<char>(s => Maybe.just([s.first(), s.rest()]));
+export const Character: Parser<char> =
+	new Parser<char>(s => Maybe.just([s.first(), s.rest()]))
+	.matches(c => c !== undefined);

@@ -60,20 +60,20 @@ test("integer parser", () => {
 });
 
 test("accept parser", () => {
-	const source = new StringSource("while something; do; done");
+	const source = new StringSource("while_ something; do; done");
 	const ptr = new SourcePointer(source);
 
-	const [_, rest] = Accept("while").parse(ptr).from();
+	const [_, rest] = Accept("while_").parse(ptr).from();
 	expect(rest.equals("something; do; done")).toBeTruthy();
 
 	expect(Accept("if").parse(ptr).isJust()).toBeFalsy();
 });
 
 test("require parser", () => {
-	const source = new StringSource("while something; do; done");
+	const source = new StringSource("while_ something; do; done");
 	const ptr = new SourcePointer(source);
 
-	const [_, rest] = Require("while").parse(ptr).from();
+	const [_, rest] = Require("while_").parse(ptr).from();
 	expect(rest.equals("something; do; done")).toBeTruthy();
 
 	expect(() => Require("if").parse(ptr))

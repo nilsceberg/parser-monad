@@ -15,10 +15,11 @@ export abstract class Maybe<T> {
 	}
 }
 
-class Just<T> implements Maybe<T> {
+class Just<T> extends Maybe<T> {
 	value: T;
 
 	constructor(value: T) {
+		super();
 		this.value = value;
 	}
 
@@ -39,7 +40,7 @@ class Just<T> implements Maybe<T> {
 	}
 }
 
-class Nothing<T> implements Maybe<T> {
+class Nothing<T> extends Maybe<T> {
 	or(other: Maybe<T>): Maybe<T> {
 		return other;
 	}

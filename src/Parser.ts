@@ -19,6 +19,7 @@ export const Word = Alphanumeric.repeat().map(x => x.join(""));
 export const Spaces = Space.repeat();
 export const Token = <T>(p: Parser<T>) => p.first(Spaces);
 export const Integer = Digit.then(Digit.repeat()).map(x => Number.parseInt(cons(x).join("")));
+export const Sequence = (n: number) => Character.repeat(n).map(x => x.join(""));
 
-export const Accept: (token: string) => Parser<string> = token => Token(Word).matches(x => x === token);
+export const Accept: (token: string) => Parser<string> = token => Token(Sequence(token.length)).matches(x => x === token);
 export const Require: (token: string) => Parser<string> = token => Accept(token).or(Error(`expected '${token}'`));

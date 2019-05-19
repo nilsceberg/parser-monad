@@ -26,6 +26,13 @@ test("character parser", () => {
 	expect(rest.equals("ello")).toBeTruthy();
 });
 
+test("character parser EOF", () => {
+	const source = new StringSource("");
+	const ptr = new SourcePointer(source);
+
+	expect(Character.parse(ptr).isJust()).toBeFalsy();
+});
+
 test("matches combinator", () => {
 	expect(Character.matches(x => x === "e").parse(ptr).isJust()).toBeFalsy();
 
