@@ -36,7 +36,17 @@ export class Operation extends Expr {
 	}
 }
 
-export const num = Token(Integer).map(x => new Num(x));
+const id = (x: any) => x
+const negate = (x: number) => -x
+
+export const sign =
+	Token(Lit("-")).map(_ => negate)
+	.or(Token(Lit("+")).map(_ => id))
+	.or(Return(id));
+
+export const num =
+	sign.bind(f => Token(Integer).map(x => new Num(f(x))));
+
 export function parenthesis(): Parser<Expr> { 
 	return Accept("(").second(expr).first(Require(")"));
 }
