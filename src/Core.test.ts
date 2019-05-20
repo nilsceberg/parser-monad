@@ -59,6 +59,20 @@ test("or combinator", () => {
 	expect(c.or(e).parse(ptr).isJust()).toBeFalsy();
 });
 
+test("orMany combinator", () => {
+	const a = Fail;
+	const b = Fail;
+	const c = Return(5);
+	const d = Return(13);
+	d.parse = jest.fn();
+
+	let [value, rest] = a.orMany([b, c, d]).parse(ptr).from();
+	expect(value).toStrictEqual(5);
+	expect(d.parse).not.toHaveBeenCalled();
+
+	expect(a.orMany([b]).parse(ptr).isJust()).toBeFalsy();
+});
+
 test("repeat combinator", () => {
 	let [value, rest] = Character.repeat(3).parse(ptr).from();
 	expect(value).toStrictEqual(["h", "e", "l"]);

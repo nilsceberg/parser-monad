@@ -39,6 +39,17 @@ export class Parser<T> {
 		});
 	}
 
+	orMany(ps: Parser<T>[]): Parser<T> {
+		return new Parser(s => {
+			let result = this.parse(s);
+			for (let p of ps) {
+				if (result.isJust()) break;
+				result = p.parse(s);
+			}
+			return result;
+		});
+	}
+
 	repeat(n: number = -1): Parser<T[]> {
 		return new Parser(s => {
 			let i = n;
