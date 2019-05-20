@@ -1,5 +1,6 @@
 import { Lit, Token, Integer, Accept, Require } from "../Parser";
 import { Return, Parser } from "../Core";
+import { StringSource, SourcePointer } from "../Source";
 
 export abstract class Expr {
 	abstract evaluate(): number;
@@ -36,13 +37,32 @@ export class Operation extends Expr {
 }
 
 export const num = Token(Integer).map(x => new Num(x));
-export const expr = num;
-export const parenthesis = Accept("(").second(expr).first(Require(")"));
-export const factor: Parser<Expr> = parenthesis.or(num);
-export const term_: (left: Expr) => Parser<Expr> = (left: Expr) => 
+export function parenthesis(): Parser<Expr> { 
+	return Accept("(").second(expr).first(Require(")"));
+}
+
+export function factor(): Parser<Expr> {
+	return parenthesis().or(num);
+}
+
+export function term_(): (left: Expr) => Parser<Expr> {
+	return (left: Expr) => 
 	Token(Lit("*")).second(Return((a: number, b: number) => a*b))
 	.or(Token(Lit("/")).second(Return((a: number, b: number) => a/b)))
-	.then(factor).bind(([op, right]) => term_(new Operation(op, left, right)))
+	.then(factor()).bind(([op, right]) => term_()(new Operation(op, left, right)))
 	.or(Return(left));
+}
 
-export const term: Parser<Expr> = factor.bind(term_);
+export function term(): Parser<Expr> {
+	return factor().bind(term_());
+}
+
+export function expr_(): (left: Expr) => Parser<Expr>{
+	return (left: Expr) => 
+		Token(Lit("+")).second(Return((a: number, b: number) => a+b))
+		.or(Token(Lit("-")).second(Return((a: number, b: number) => a-b)))
+		.then(term()).bind(([op, right]) => expr_()(new Operation(op, left, right)))
+		.or(Return(left));
+}
+
+export const expr: Parser<Expr> = term().bind(expr_());

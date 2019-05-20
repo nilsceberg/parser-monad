@@ -1,5 +1,6 @@
 import { SourcePointer, char } from "./Source";
 import { Maybe } from "./Maybe";
+import * as util from "util";
 
 export type ParserResult<T> = Maybe<[T, SourcePointer]>;
 export type ParserFunction<T> = (p: SourcePointer) => ParserResult<T>;
@@ -94,8 +95,9 @@ export class Parser<T> {
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));
 export const Fail = new Parser<any>(s => Maybe.nothing());
 export const Error = (message: string) => new Parser<any>(s => {
-	throw(`${message} at ?`);
+	throw(`${message} at ? near ${util.inspect(s)}`);
 });
+
 export const Character: Parser<char> =
 	new Parser<char>(s => Maybe.just([s.first(), s.rest()]))
 	.matches(c => c !== undefined);

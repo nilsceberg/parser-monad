@@ -34,4 +34,8 @@ export class SourcePointer {
 	rest(): SourcePointer {
 		return new SourcePointer(this._rest.substr(1));
 	}
+
+	length(): number {
+		return this._rest.length;
+	}
 }
