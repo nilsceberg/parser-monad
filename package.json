@@ -1,8 +1,12 @@
 {
-  "name": "parser",
-  "version": "0.1.0",
+  "name": "parser-monad",
+  "version": "1.0.0",
   "description": "",
-  "main": "build/index.js",
+  "main": "build/lib.js",
+  "typings": "build/lib.d.ts",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "test": "jest"
   },
