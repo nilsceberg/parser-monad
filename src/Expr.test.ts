@@ -1,4 +1,4 @@
-import { StringSource, SourcePointer } from "../Source";
+import { StringSource, SourcePointer } from "./Source";
 import { parenthesis, Num, term, factor, expr } from "./Expr";
 
 test("parentheses", () => {

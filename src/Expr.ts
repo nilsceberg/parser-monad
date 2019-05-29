@@ -1,6 +1,6 @@
-import { Lit, Token, Integer, Accept, Require } from "../Parser";
-import { Return, Parser } from "../Core";
-import { StringSource, SourcePointer } from "../Source";
+import { Lit, Token, Integer, Accept, Require } from "./Parser";
+import { Return, Parser } from "./Core";
+import { StringSource, SourcePointer } from "./Source";
 
 export abstract class Expr {
 	abstract evaluate(): number;

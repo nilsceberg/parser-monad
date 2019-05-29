@@ -1,5 +1,5 @@
 import { StringSource, SourcePointer } from "../Source";
-import { expr } from "./Expr";
+import { expr } from "../Expr";
 
 import * as readline from "readline";
 import { Spaces } from "../Parser";
