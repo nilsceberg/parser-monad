@@ -7,7 +7,7 @@ import { Spaces } from "../Parser";
 function calculate(expression: string): number {
 	const source = new StringSource(expression);
 	const ptr = new SourcePointer(source);
-	const result = Spaces.second(expr).parse(ptr);
+	const result = Spaces.second(expr()).parse(ptr);
 
 	if (!result.isJust()) {
 		throw "syntax error";

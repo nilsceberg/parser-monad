@@ -48,7 +48,7 @@ export const num =
 	sign.bind(f => Token(Integer).map(x => new Num(f(x))));
 
 export function parenthesis(): Parser<Expr> { 
-	return Accept("(").second(expr).first(Require(")"));
+	return Accept("(").second(Parser.lazy(expr)).first(Require(")"));
 }
 
 export function factor(): Parser<Expr> {
@@ -89,4 +89,6 @@ export function expr_(): (left: Expr) => Parser<Expr>{
 	}, expr_, term);
 }
 
-export const expr: Parser<Expr> = term().bind(expr_());
+export function expr(): Parser<Expr> {
+	return term().bind(expr_());
+}

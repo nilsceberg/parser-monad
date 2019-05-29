@@ -111,3 +111,10 @@ test("bind combinator", () => {
 	expect(value).toStrictEqual(["h", "e", "l", "l"]);
 	expect(rest.equals("o")).toBeTruthy();
 });
+
+test("lazy evaluation helper", () => {
+	const magic = () => Character;
+	let [value, rest] = Return(4).bind(n => Parser.lazy(magic).repeat(n)).parse(ptr).from();
+	expect(value).toStrictEqual(["h", "e", "l", "l"]);
+	expect(rest.equals("o")).toBeTruthy();
+});

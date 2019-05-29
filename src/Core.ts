@@ -101,6 +101,12 @@ export class Parser<T> {
 	then<U>(other: Parser<U>): Parser<[T, U]> {
 		return this.bind(x => other.map(y => [x, y]));
 	}
+
+	static lazy<T>(factory: () => Parser<T>): Parser<T> {
+		return new Parser<T>(s => {
+			return factory().parse(s);
+		});
+	}
 }
 
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));
