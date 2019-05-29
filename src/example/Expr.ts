@@ -55,12 +55,27 @@ export function factor(): Parser<Expr> {
 	return parenthesis().or(num);
 }
 
+function leftAssoc(
+	ops: { [sym: string]: ((a: number, b: number) => number) },
+	right: () => (left: Expr) => Parser<Expr>,
+	operand: () => Parser<Expr>,
+): (left: Expr) => Parser<Expr> {
+	return (left: Expr) => {
+		const parsers: Parser<(a: number, b: number) => number>[] = [];
+		for (let sym in ops) {
+			parsers.push(Token(Lit(sym)).second(Return(ops[sym])));
+		}
+		return Parser.orMany(parsers)
+			.then(operand()).bind(([op, right_]) => right()(new Operation(op, left, right_)))
+			.or(Return(left));
+	};
+}
+
 export function term_(): (left: Expr) => Parser<Expr> {
-	return (left: Expr) => 
-	Token(Lit("*")).second(Return((a: number, b: number) => a*b))
-	.or(Token(Lit("/")).second(Return((a: number, b: number) => a/b)))
-	.then(factor()).bind(([op, right]) => term_()(new Operation(op, left, right)))
-	.or(Return(left));
+	return leftAssoc({
+		"*": (a, b) => a * b,
+		"/": (a, b) => a / b,
+	}, term_, factor);
 }
 
 export function term(): Parser<Expr> {
@@ -68,11 +83,10 @@ export function term(): Parser<Expr> {
 }
 
 export function expr_(): (left: Expr) => Parser<Expr>{
-	return (left: Expr) => 
-		Token(Lit("+")).second(Return((a: number, b: number) => a+b))
-		.or(Token(Lit("-")).second(Return((a: number, b: number) => a-b)))
-		.then(term()).bind(([op, right]) => expr_()(new Operation(op, left, right)))
-		.or(Return(left));
+	return leftAssoc({
+		"+": (a, b) => a + b,
+		"-": (a, b) => a - b,
+	}, expr_, term);
 }
 
 export const expr: Parser<Expr> = term().bind(expr_());

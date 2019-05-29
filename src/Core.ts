@@ -39,12 +39,12 @@ export class Parser<T> {
 		});
 	}
 
-	orMany(ps: Parser<T>[]): Parser<T> {
+	static orMany<T>(ps: Parser<T>[]): Parser<T> {
 		return new Parser(s => {
-			let result = this.parse(s);
+			let result: ParserResult<T> = Maybe.nothing();
 			for (let p of ps) {
-				if (result.isJust()) break;
 				result = p.parse(s);
+				if (result.isJust()) break;
 			}
 			return result;
 		});

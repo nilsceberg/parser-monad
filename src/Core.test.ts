@@ -66,11 +66,11 @@ test("orMany combinator", () => {
 	const d = Return(13);
 	d.parse = jest.fn();
 
-	let [value, rest] = a.orMany([b, c, d]).parse(ptr).from();
+	let [value, rest] = Parser.orMany([a, b, c, d]).parse(ptr).from();
 	expect(value).toStrictEqual(5);
 	expect(d.parse).not.toHaveBeenCalled();
 
-	expect(a.orMany([b]).parse(ptr).isJust()).toBeFalsy();
+	expect(Parser.orMany([a, b]).parse(ptr).isJust()).toBeFalsy();
 });
 
 test("repeat combinator", () => {
