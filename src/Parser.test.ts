@@ -1,5 +1,5 @@
 import { StringSource, SourcePointer } from "./Source";
-import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require } from "./Parser";
+import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require, Allow } from "./Parser";
 
 test("lit parser", () => {
 	const source = new StringSource("hello");
@@ -78,4 +78,15 @@ test("require parser", () => {
 
 	expect(() => Require("if").parse(ptr))
 		.toThrow("expected 'if' at ?");
+});
+
+test("allow parser", () => {
+	const source = new StringSource("while_ something; do; done");
+	const ptr = new SourcePointer(source);
+
+	let [_, rest] = Allow("while_").parse(ptr).from();
+	expect(rest.equals("something; do; done")).toBeTruthy();
+
+	[_, rest] = Allow("if_").parse(ptr).from();
+	expect(rest.equals("while_ something; do; done")).toBeTruthy();
 });
