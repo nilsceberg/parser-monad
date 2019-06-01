@@ -85,19 +85,19 @@ test("expr", () => {
 	expect(result3.evaluate()).toStrictEqual(4);
 });
 
-//test("built expr", () => {
-//	const source = new StringSource("3+4/2*2");
-//	const ptr = new SourcePointer(source);
-//	const [result, rest] = builtExpr.parse(ptr).from();
-//	expect(result.evaluate()).toStrictEqual(7);
-//
-//	const source2 = new StringSource("3*4/(2+2)");
-//	const ptr2 = new SourcePointer(source2);
-//	const [result2, rest2] = builtExpr.parse(ptr2).from();
-//	expect(result2.evaluate()).toStrictEqual(3);
-//
-//	const source3 = new StringSource("(2+2)");
-//	const ptr3 = new SourcePointer(source3);
-//	const [result3, rest3] = builtExpr.parse(ptr3).from();
-//	expect(result3.evaluate()).toStrictEqual(4);
-//});
+test("built expr", () => {
+	const source = new StringSource("3+4/2*2");
+	const ptr = new SourcePointer(source);
+	const [result, rest] = builtExpr.parse(ptr).from();
+	expect(result.evaluate()).toStrictEqual(7);
+
+	const source2 = new StringSource("3*4/(2+2)");
+	const ptr2 = new SourcePointer(source2);
+	const [result2, rest2] = builtExpr.parse(ptr2).from();
+	expect(result2.evaluate()).toStrictEqual(3);
+
+	const source3 = new StringSource("(2+2)");
+	const ptr3 = new SourcePointer(source3);
+	const [result3, rest3] = builtExpr.parse(ptr3).from();
+	expect(result3.evaluate()).toStrictEqual(4);
+});

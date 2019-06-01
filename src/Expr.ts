@@ -36,6 +36,8 @@ export class BinaryOperation extends Expr {
 	}
 }
 
+// This should be fairly self-explanatory: a recursive left-associative
+// parser builder.
 export function leftAssoc(
 	ops: { [sym: string]: ((a: any, b: any) => any) },
 	right: () => (left: Expr) => Parser<Expr>,
@@ -71,7 +73,37 @@ export function exprParser(
 	ops: { [sym: string]: ((a: any, b: any) => any) }[],
 	literals: Parser<Expr>[]
 ): Parser<Expr> {
-	return null;
+	// This is kind of a mess, so hold on tight:
+	// We initialize a separate top variable, which will eventually hold the
+	// top level expression parser and let the bottom level parser access that
+	// via its closure.
+	let top: Parser<Expr> = null;
+
+	// The bottom level parser parses parentheses with the top level parser
+	// inside of them, or a literal
+	let level = Parser.lazy(() =>
+			Accept("(").second(top).first(Require(")"))
+			.or(Parser.orMany(literals))
+		);
+
+	// Then, each level (with the operators in ops) depends on the previous one.
+	for (const levelOps of ops) {
+		// The operand variable stores the previous level for the closure of
+		// of the "right" function, which uses the leftAssoc helper to construct
+		// a left-associative parser recursively.
+		const operand = level;
+		function right(): (left: Expr) => Parser<Expr> {
+			return leftAssoc(levelOps, right, operand);
+		}
+
+		// We start with left-most operand, then the recursive right side.
+		level = operand.bind(right());
+	}
+
+	// Set the top level parser (so that the bottom level parser can use it)
+	// and return it.
+	top = level;
+	return level;
 }
 
 export const builtExpr = exprParser(
