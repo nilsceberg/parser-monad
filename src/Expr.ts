@@ -3,7 +3,7 @@ import { Return, Parser } from "./Core";
 import { StringSource, SourcePointer } from "./Source";
 
 export abstract class Expr {
-	abstract evaluate(): number;
+	abstract evaluate(): any;
 }
 
 export class Num extends Expr {
@@ -19,7 +19,7 @@ export class Num extends Expr {
 	}
 }
 
-export class Operation extends Expr {
+export class BinaryOperation extends Expr {
 	left: Expr;
 	right: Expr;
 	op: (l: number, r: number) => number;
@@ -36,6 +36,22 @@ export class Operation extends Expr {
 	}
 }
 
+export function leftAssoc(
+	ops: { [sym: string]: ((a: any, b: any) => any) },
+	right: () => (left: Expr) => Parser<Expr>,
+	operand: Parser<Expr>,
+): (left: Expr) => Parser<Expr> {
+	return (left: Expr) => {
+		const parsers: Parser<(a: any, b: any) => any>[] = [];
+		for (let sym in ops) {
+			parsers.push(Accept(sym).second(Return(ops[sym])));
+		}
+		return Parser.orMany(parsers)
+			.then(operand).bind(([op, right_]) => right()(new BinaryOperation(op, left, right_)))
+			.or(Return(left));
+	};
+}
+
 const id = (x: any) => x
 const negate = (x: number) => -x
 
@@ -47,29 +63,30 @@ export const sign =
 export const num =
 	sign.bind(f => Token(Integer).map(x => new Num(f(x))));
 
-export function parenthesis(): Parser<Expr> { 
-	return Accept("(").second(Parser.lazy(expr)).first(Require(")"));
+export const parenthesis: Parser<Expr> = Parser.lazy(() =>
+	Accept("(").second(expr).first(Require(")"))
+);
+
+export function exprParser(
+	ops: { [sym: string]: ((a: any, b: any) => any) }[],
+	literals: Parser<Expr>[]
+): Parser<Expr> {
+	return null;
 }
 
-export function factor(): Parser<Expr> {
-	return parenthesis().or(num);
-}
+export const builtExpr = exprParser(
+	[{
+		"+": (a, b) => a + b,
+		"-": (a, b) => a - b,
+	}, {
+		"*": (a, b) => a * b,
+		"/": (a, b) => a / b,
+	}],
+	[num]
+);
 
-function leftAssoc(
-	ops: { [sym: string]: ((a: number, b: number) => number) },
-	right: () => (left: Expr) => Parser<Expr>,
-	operand: () => Parser<Expr>,
-): (left: Expr) => Parser<Expr> {
-	return (left: Expr) => {
-		const parsers: Parser<(a: number, b: number) => number>[] = [];
-		for (let sym in ops) {
-			parsers.push(Token(Lit(sym)).second(Return(ops[sym])));
-		}
-		return Parser.orMany(parsers)
-			.then(operand()).bind(([op, right_]) => right()(new Operation(op, left, right_)))
-			.or(Return(left));
-	};
-}
+export const factor: Parser<Expr> =
+	parenthesis.or(num);
 
 export function term_(): (left: Expr) => Parser<Expr> {
 	return leftAssoc({
@@ -78,9 +95,8 @@ export function term_(): (left: Expr) => Parser<Expr> {
 	}, term_, factor);
 }
 
-export function term(): Parser<Expr> {
-	return factor().bind(term_());
-}
+export const term: Parser<Expr> =
+	factor.bind(term_());
 
 export function expr_(): (left: Expr) => Parser<Expr>{
 	return leftAssoc({
@@ -89,6 +105,5 @@ export function expr_(): (left: Expr) => Parser<Expr>{
 	}, expr_, term);
 }
 
-export function expr(): Parser<Expr> {
-	return term().bind(expr_());
-}
+export const expr: Parser<Expr> =
+	term.bind(expr_());
