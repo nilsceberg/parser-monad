@@ -22,16 +22,16 @@ export class Num extends Expr {
 export class BinaryOperation extends Expr {
 	left: Expr;
 	right: Expr;
-	op: (l: number, r: number) => number;
+	op: (l: any, r: any) => any;
 
-	constructor(op: (l: number, r: number) => number, left: Expr, right: Expr) {
+	constructor(op: (l: any, r: any) => any, left: Expr, right: Expr) {
 		super();
 		this.op = op;
 		this.left = left;
 		this.right = right;
 	}
 
-	evaluate(): number {
+	evaluate(): any {
 		return this.op(this.left.evaluate(), this.right.evaluate());
 	}
 }
