@@ -112,11 +112,11 @@ const op: (f: (x: number, y: number) => number) => (left: Expr, right: Expr) => 
 
 export const builtExpr = exprParser(
 	[{
-		"+": op((a, b) => a + b),
-		"-": op((a, b) => a - b),
-	}, {
 		"*": op((a, b) => a * b),
 		"/": op((a, b) => a / b),
+	}, {
+		"+": op((a, b) => a + b),
+		"-": op((a, b) => a - b),
 	}],
 	[num]
 );

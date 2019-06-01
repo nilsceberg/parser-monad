@@ -86,10 +86,10 @@ test("expr", () => {
 });
 
 test("built expr", () => {
-	const source = new StringSource("3+4/2*2");
+	const source = new StringSource("10+4/2");
 	const ptr = new SourcePointer(source);
 	const [result, rest] = builtExpr.parse(ptr).from();
-	expect(result.evaluate()).toStrictEqual(7);
+	expect(result.evaluate()).toStrictEqual(12);
 
 	const source2 = new StringSource("3*4/(2+2)");
 	const ptr2 = new SourcePointer(source2);
