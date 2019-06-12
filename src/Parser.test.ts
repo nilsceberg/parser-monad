@@ -1,5 +1,48 @@
 import { StringSource, SourcePointer } from "./Source";
-import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require, Allow, Default } from "./Parser";
+import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require, Allow, Default, ParserSettings, LineComment, RawLitSequence, Sequence } from "./Parser";
+
+beforeEach(() => {
+	ParserSettings.LINE_COMMENT = ["//"];
+});
+
+test("raw lit sequence", () => {
+	const source = new StringSource("// test comment");
+	const ptr = new SourcePointer(source);
+
+	const [result, rest] = RawLitSequence("//").parse(ptr).from();
+
+	expect(result).toStrictEqual("//");
+	expect(rest.equals(" test comment")).toBeTruthy();
+});
+
+test("line comment parser", () => {
+	const source = new StringSource("// test comment\nrest");
+	const ptr = new SourcePointer(source);
+
+	const [result, rest] = LineComment.parse(ptr).from();
+	expect(result).toStrictEqual(" test comment");
+	expect(rest.equals("\nrest")).toBeTruthy();
+});
+
+describe("character parser", () => {
+	test("single comment", () => {
+		const source = new StringSource("ab// test comment\ncd");
+		const ptr = new SourcePointer(source);
+
+		const [result, rest] = Sequence(5).parse(ptr).from();
+		expect(result).toStrictEqual("ab\ncd");
+		expect(rest.equals("")).toBeTruthy();
+	});
+
+	test("multiple comments", () => {
+		const source = new StringSource("ab// test comment\n// again\ncd");
+		const ptr = new SourcePointer(source);
+
+		const [result, rest] = Sequence(6).parse(ptr).from();
+		expect(result).toStrictEqual("ab\n\ncd");
+		expect(rest.equals("")).toBeTruthy();
+	});
+});
 
 test("lit parser", () => {
 	const source = new StringSource("hello");

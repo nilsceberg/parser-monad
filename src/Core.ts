@@ -115,6 +115,6 @@ export const Error = (message: string) => new Parser<any>(s => {
 	throw(`${message} at ? near ${util.inspect(s)}`);
 });
 
-export const Character: Parser<char> =
+export const RawCharacter: Parser<char> =
 	new Parser<char>(s => Maybe.just([s.first(), s.rest()]))
 	.matches(c => c !== undefined);

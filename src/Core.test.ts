@@ -1,4 +1,4 @@
-import { Parser, Character, Return, Fail, Error } from "./Core";
+import { Parser, RawCharacter, Return, Fail, Error } from "./Core";
 import { StringSource, SourcePointer, char } from "./Source";
 
 const source = new StringSource("hello");
@@ -20,23 +20,23 @@ test("error parser", () => {
 		.toThrow("error at ?");
 });
 
-test("character parser", () => {
-	const [value, rest] = Character.parse(ptr).from();
+test("RawCharacter parser", () => {
+	const [value, rest] = RawCharacter.parse(ptr).from();
 	expect(value).toStrictEqual("h");
 	expect(rest.equals("ello")).toBeTruthy();
 });
 
-test("character parser EOF", () => {
+test("RawCharacter parser EOF", () => {
 	const source = new StringSource("");
 	const ptr = new SourcePointer(source);
 
-	expect(Character.parse(ptr).isJust()).toBeFalsy();
+	expect(RawCharacter.parse(ptr).isJust()).toBeFalsy();
 });
 
 test("matches combinator", () => {
-	expect(Character.matches(x => x === "e").parse(ptr).isJust()).toBeFalsy();
+	expect(RawCharacter.matches(x => x === "e").parse(ptr).isJust()).toBeFalsy();
 
-	const [value, rest] = Character.matches(x => x === "h").parse(ptr).from();
+	const [value, rest] = RawCharacter.matches(x => x === "h").parse(ptr).from();
 	expect(value).toStrictEqual("h");
 	expect(rest.equals("ello")).toBeTruthy();
 });
@@ -74,11 +74,11 @@ test("orMany combinator", () => {
 });
 
 test("repeat combinator", () => {
-	let [value, rest] = Character.repeat(3).parse(ptr).from();
+	let [value, rest] = RawCharacter.repeat(3).parse(ptr).from();
 	expect(value).toStrictEqual(["h", "e", "l"]);
 	expect(rest.equals("lo")).toBeTruthy();
 
-	[value, rest] = Character.matches(x => x === "h" || x === "e").repeat().parse(ptr).from();
+	[value, rest] = RawCharacter.matches(x => x === "h" || x === "e").repeat().parse(ptr).from();
 	expect(value).toStrictEqual(["h", "e"]);
 	expect(rest.equals("llo")).toBeTruthy();
 });
@@ -89,31 +89,31 @@ test("map combinator", () => {
 });
 
 test("first combinator", () => {
-	let [value, rest] = Character.first(Character).parse(ptr).from();
+	let [value, rest] = RawCharacter.first(RawCharacter).parse(ptr).from();
 	expect(value).toStrictEqual("h");
 	expect(rest.equals("llo")).toBeTruthy();
 });
 
 test("second combinator", () => {
-	let [value, rest] = Character.second(Character).parse(ptr).from();
+	let [value, rest] = RawCharacter.second(RawCharacter).parse(ptr).from();
 	expect(value).toStrictEqual("e");
 	expect(rest.equals("llo")).toBeTruthy();
 });
 
 test("then combinator", () => {
-	let [value, rest] = Character.then(Character).parse(ptr).from();
+	let [value, rest] = RawCharacter.then(RawCharacter).parse(ptr).from();
 	expect(value).toStrictEqual(["h", "e"]);
 	expect(rest.equals("llo")).toBeTruthy();
 });
 
 test("bind combinator", () => {
-	let [value, rest] = Return(4).bind(n => Character.repeat(n)).parse(ptr).from();
+	let [value, rest] = Return(4).bind(n => RawCharacter.repeat(n)).parse(ptr).from();
 	expect(value).toStrictEqual(["h", "e", "l", "l"]);
 	expect(rest.equals("o")).toBeTruthy();
 });
 
 test("lazy evaluation helper", () => {
-	const magic = () => Character;
+	const magic = () => RawCharacter;
 	let [value, rest] = Return(4).bind(n => Parser.lazy(magic).repeat(n)).parse(ptr).from();
 	expect(value).toStrictEqual(["h", "e", "l", "l"]);
 	expect(rest.equals("o")).toBeTruthy();

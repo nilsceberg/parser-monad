@@ -1,10 +1,26 @@
-import { Character, Fail, Parser, Error, Return } from "./Core";
+import { RawCharacter, Fail, Parser, Error, Return } from "./Core";
 import { char } from "./Source";
 import { cons } from "./Utility";
 
 export class ParserSettings {
 	static WHITESPACE = " \t\n\r";
+	static LINE_COMMENT = [];
 }
+
+// Base
+export const RawLit = (c: char) => RawCharacter.matches(x => x === c);
+export const RawSequence = (n: number) => RawCharacter.repeat(n).map(x => x.join(""));
+export const RawLitSequence: (sequence: string) => Parser<string> =
+	sequence => RawSequence(sequence.length).matches(x => x === sequence);
+
+export const LineComment =
+	Parser.lazy(() =>
+		Parser.orMany(ParserSettings.LINE_COMMENT.map(
+			c => RawLitSequence(c)
+		))
+	).second(RawCharacter.matches(x => x != "\n").repeat().map(s => s.join("")));
+
+export const Character = LineComment.repeat().second(RawCharacter);
 
 // Utility
 export const Lit = (c: char) => Character.matches(x => x === c);
