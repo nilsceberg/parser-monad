@@ -1,4 +1,4 @@
-import { Parser, RawCharacter, Return, Fail, Error } from "./Core";
+import { Parser, RawCharacter, Return, Fail, Error, Lookahead } from "./Core";
 import { StringSource, SourcePointer, char } from "./Source";
 
 const source = new StringSource("hello");
@@ -32,6 +32,16 @@ test("RawCharacter parser EOF", () => {
 
 	expect(RawCharacter.parse(ptr).isJust()).toBeFalsy();
 });
+
+test("Lookahead parser", () => {
+	const source = new StringSource("abc");
+	const ptr = new SourcePointer(source);
+	
+	const [value, rest] = Lookahead(2).parse(ptr).from();
+
+	expect(value).toStrictEqual("ab");
+	expect(rest.equals("abc")).toBeTruthy();
+})
 
 test("matches combinator", () => {
 	expect(RawCharacter.matches(x => x === "e").parse(ptr).isJust()).toBeFalsy();

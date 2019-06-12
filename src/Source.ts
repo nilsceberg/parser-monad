@@ -31,6 +31,10 @@ export class SourcePointer {
 		return this._rest[0];
 	}
 
+	lookahead(n: number): string {
+		return this._rest.substr(0, n);
+	}
+
 	rest(): SourcePointer {
 		return new SourcePointer(this._rest.substr(1));
 	}

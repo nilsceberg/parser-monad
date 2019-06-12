@@ -118,3 +118,7 @@ export const Error = (message: string) => new Parser<any>(s => {
 export const RawCharacter: Parser<char> =
 	new Parser<char>(s => Maybe.just([s.first(), s.rest()]))
 	.matches(c => c !== undefined);
+
+export const Lookahead: (n: number) => Parser<string> = n =>
+	new Parser<string>(s => Maybe.just([s.lookahead(n), s]))
+	.matches(s => s.length === n);
