@@ -1,8 +1,23 @@
 import { StringSource, SourcePointer } from "./Source";
-import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require, Allow, Default, ParserSettings, LineComment, RawLitSequence, Sequence } from "./Parser";
+import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require, Allow, Default, ParserSettings, LineComment, RawLitSequence, Sequence, Spaces } from "./Parser";
 
 beforeEach(() => {
 	ParserSettings.LINE_COMMENT = ["//"];
+});
+
+test("space parser", () => {
+	const oldWhitespace = ParserSettings.WHITESPACE;
+	ParserSettings.WHITESPACE = ["aa", "b"];
+
+	const source = new StringSource("aabac");
+	const ptr = new SourcePointer(source);
+
+	const [result, rest] = Spaces.parse(ptr).from();
+
+	expect(result).toStrictEqual(["aa", "b"]);
+	expect(rest.equals("ac")).toBeTruthy();
+
+	ParserSettings.WHITESPACE = oldWhitespace;
 });
 
 test("raw lit sequence", () => {

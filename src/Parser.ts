@@ -3,7 +3,7 @@ import { char } from "./Source";
 import { cons } from "./Utility";
 
 export class ParserSettings {
-	static WHITESPACE = " \t\n\r";
+	static WHITESPACE = [" ", "\t", "\n", "\r"];
 	static LINE_COMMENT = [];
 }
 
@@ -26,7 +26,9 @@ export const Character = LineComment.repeat().second(RawCharacter);
 export const Lit = (c: char) => Character.matches(x => x === c);
 
 // Trivial
-export const Space = Character.matches(x => ParserSettings.WHITESPACE.includes(x));
+export const Space = Parser.lazy(() => Parser.orMany(ParserSettings.WHITESPACE.map(
+	w => RawLitSequence(w)
+)));
 export const Digit = Character.matches(x => "0123456789".includes(x));
 export const Letter = Character.matches(x => {
 	const a = x.charCodeAt(0);
