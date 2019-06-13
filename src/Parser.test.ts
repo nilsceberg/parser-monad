@@ -1,5 +1,6 @@
 import { StringSource, SourcePointer } from "./Source";
 import { Lit, Alphanumeric, Word, Token, Integer, Digit, Accept, Require, Allow, Default, ParserSettings, LineComment, RawLitSequence, Sequence, Spaces } from "./Parser";
+import { Parser } from "./Core";
 
 beforeEach(() => {
 	ParserSettings.LINE_COMMENT = ["//"];
@@ -125,6 +126,22 @@ test("accept parser", () => {
 	expect(rest.equals("something; do; done")).toBeTruthy();
 
 	expect(Accept("if").parse(ptr).isJust()).toBeFalsy();
+});
+
+test("case insensitivity", () => {
+	const oldCS = ParserSettings.CASE_SENSITIVE;
+	ParserSettings.CASE_SENSITIVE = false;
+
+	const source = new StringSource("WhiLE something; do; done");
+	const ptr = new SourcePointer(source);
+
+	const [result, rest] = Accept("while").parse(ptr).from();
+	expect(result).toStrictEqual("WhiLE");
+	expect(rest.equals("something; do; done")).toBeTruthy();
+
+	expect(Accept("if").parse(ptr).isJust()).toBeFalsy();
+
+	ParserSettings.CASE_SENSITIVE = oldCS;
 });
 
 test("require parser", () => {

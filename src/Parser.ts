@@ -5,6 +5,7 @@ import { cons } from "./Utility";
 export class ParserSettings {
 	static WHITESPACE = [" ", "\t", "\n", "\r"];
 	static LINE_COMMENT = [];
+	static CASE_SENSITIVE = true;
 }
 
 // Base
@@ -43,12 +44,15 @@ export const Token = <T>(p: Parser<T>) => p.first(Spaces);
 export const Integer = Digit.then(Digit.repeat()).map(x => Number.parseInt(cons(x).join("")));
 export const Sequence = (n: number) => Character.repeat(n).map(x => x.join(""));
 
-export const Accept: (token: string) => Parser<string> =
-	token => Token(Sequence(token.length)).matches(x => x === token);
-export const Require: (token: string) => Parser<string> =
-	token => Accept(token).or(Error(`expected '${token}'`));
-export const Allow: (token: string) => Parser<string> =
-	token => Accept(token).or(Return(""));
+export const Accept: (token: string, cs?: boolean) => Parser<string> =
+	(token, cs = ParserSettings.CASE_SENSITIVE) => Token(Sequence(token.length))
+	.matches(x => x.localeCompare(token, undefined, { sensitivity: cs ? "variant" : "accent" }) === 0);
+
+export const Require: (token: string, cs?: boolean) => Parser<string> =
+	(token, cs = ParserSettings.CASE_SENSITIVE) => Accept(token).or(Error(`expected '${token}'`));
+
+export const Allow: (token: string, cs?: boolean) => Parser<string> =
+	(token, cs = ParserSettings.CASE_SENSITIVE) => Accept(token).or(Return(""));
 
 export const Default: <T>(parser: Parser<T>, def: T) => Parser<T> =
 	(p, d) => p.or(Return(d));
