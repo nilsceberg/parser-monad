@@ -112,7 +112,7 @@ export class Parser<T> {
 export const Return = <T>(x: T) => new Parser<T>(s => Maybe.just([x, s]));
 export const Fail = new Parser<any>(s => Maybe.nothing());
 export const Error = (message: string) => new Parser<any>(s => {
-	throw(`${message} at ? near ${util.inspect(s)}`);
+	throw(`${message} at ? near ${s.toString()}`);
 });
 
 export const RawCharacter: Parser<char> =

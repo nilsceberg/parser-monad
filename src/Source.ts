@@ -14,18 +14,22 @@ export class StringSource implements Source {
 export class SourcePointer {
 	private source: StringSource;
 	private index: number;
+	private line: number;
 
-	constructor(source: Source, index: number = 0) {
+	constructor(source: Source, index: number = 0, line: number = 1) {
 		this.source = <StringSource>source;
 		this.index = index;
+		this.line = line;
+
+		if (this.source.s[index] === '\n') this.line++;
 	}
 
 	equals(s: string): boolean {
-		return this.toString() == s;
+		return this.source.s.substr(this.index) === s;
 	}
 
 	toString(): string {
-		return this.source.s.substr(this.index);
+		return `line ${this.line}: ${this.source.s.substr(this.index)}`;
 	}
 
 	first(): char {
@@ -37,7 +41,7 @@ export class SourcePointer {
 	}
 
 	rest(): SourcePointer {
-		return new SourcePointer(this.source, this.index + 1);
+		return new SourcePointer(this.source, this.index + 1, this.line);
 	}
 
 	length(): number {
