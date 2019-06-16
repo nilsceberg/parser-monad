@@ -12,34 +12,35 @@ export class StringSource implements Source {
 }
 
 export class SourcePointer {
-	private _rest: string;
+	private source: StringSource;
+	private index: number;
 
-	constructor(source: Source | string) {
-		if (typeof source === "string") {
-			this._rest = source;
-		}
-		else {
-			this._rest = (<StringSource>source).s;
-		}
+	constructor(source: Source, index: number = 0) {
+		this.source = <StringSource>source;
+		this.index = index;
 	}
 
 	equals(s: string): boolean {
-		return this._rest == s;
+		return this.toString() == s;
+	}
+
+	toString(): string {
+		return this.source.s.substr(this.index);
 	}
 
 	first(): char {
-		return this._rest[0];
+		return this.source.s[this.index];
 	}
 
 	lookahead(n: number): string {
-		return this._rest.substr(0, n);
+		return this.source.s.substr(this.index, n);
 	}
 
 	rest(): SourcePointer {
-		return new SourcePointer(this._rest.substr(1));
+		return new SourcePointer(this.source, this.index + 1);
 	}
 
 	length(): number {
-		return this._rest.length;
+		return this.source.s.length - this.index;
 	}
 }
