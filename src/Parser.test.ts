@@ -31,13 +31,27 @@ test("raw lit sequence", () => {
 	expect(rest.equals(" test comment")).toBeTruthy();
 });
 
-test("line comment parser", () => {
-	const source = new StringSource("// test comment\nrest");
-	const ptr = new SourcePointer(source);
+describe("line comment", () => {
+	test("single character end parser", () => {
+		const source = new StringSource("// test comment\nrest");
+		const ptr = new SourcePointer(source);
 
-	const [result, rest] = LineComment.parse(ptr).from();
-	expect(result).toStrictEqual(" test comment");
-	expect(rest.equals("\nrest")).toBeTruthy();
+		const [result, rest] = LineComment.parse(ptr).from();
+		expect(result).toStrictEqual(" test comment");
+		expect(rest.equals("\nrest")).toBeTruthy();
+	});
+
+	test("multi-character end parser", () => {
+		const oldEnd = ParserSettings.LINE_COMMENT_END;
+		ParserSettings.LINE_COMMENT_END=["%>"];
+		const source = new StringSource("// test comment%>rest");
+		const ptr = new SourcePointer(source);
+
+		const [result, rest] = LineComment.parse(ptr).from();
+		expect(result).toStrictEqual(" test comment");
+		expect(rest.equals("%>rest")).toBeTruthy();
+		ParserSettings.LINE_COMMENT_END = oldEnd;
+	});
 });
 
 describe("character parser", () => {

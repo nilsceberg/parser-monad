@@ -5,6 +5,7 @@ import { cons } from "./Utility";
 export class ParserSettings {
 	static WHITESPACE = [" ", "\t", "\n", "\r"];
 	static LINE_COMMENT = [];
+	static LINE_COMMENT_END = ["\n"];
 	static CASE_SENSITIVE = true;
 }
 
@@ -14,12 +15,18 @@ export const RawSequence = (n: number) => RawCharacter.repeat(n).map(x => x.join
 export const RawLitSequence: (sequence: string) => Parser<string> =
 	sequence => RawSequence(sequence.length).matches(x => x === sequence);
 
+export const CharThatIsNotTheStartOf: (sequences: string[]) => Parser<char> = sequences =>
+	Parser.orMany(sequences.map(s => RawLitSequence(s)))
+	.or(RawCharacter)
+	.matches(c => !sequences.includes(c));
+
 export const LineComment =
 	Parser.lazy(() =>
 		Parser.orMany(ParserSettings.LINE_COMMENT.map(
 			c => RawLitSequence(c)
 		))
-	).second(RawCharacter.matches(x => x != "\n").repeat().map(s => s.join("")));
+		.second(CharThatIsNotTheStartOf(ParserSettings.LINE_COMMENT_END).repeat())
+	).map(s => s.join(""));
 
 export const Character = LineComment.repeat().second(RawCharacter);
 
